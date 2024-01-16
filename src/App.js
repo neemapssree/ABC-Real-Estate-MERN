@@ -9,18 +9,30 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Success from './Pages/Success';
 import Mybookings from './Pages/Mybookings';
+import { AdminAuth, LoginAuth, UserAuth } from './Authorization/Authorization';
+
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Login />}></Route>
-          <Route path='/home' element={<Home />}></Route>
-          <Route path='/success' element={<Success />}></Route>
-          <Route path='/add-property' element={<AddProperty />}></Route>
-          <Route path='/view-prop/:id' element={<PropUserView />}></Route>
-          <Route path='/my-bookings' element={<Mybookings />}></Route>
+          <Route element={<LoginAuth />}>
+            <Route path='/' element={<Login />} />
+          </Route>          
+
+          {/* user routes */}
+          <Route element={<UserAuth />}>
+            <Route path='/home' element={<Home />} />
+            <Route path='/success' element={<Success />} />          
+            <Route path='/view-prop/:id' element={<PropUserView />} />
+            <Route path='/my-bookings' element={<Mybookings />} />
+          </Route>
+
+          {/* admin router */}
+          <Route element={<AdminAuth />}>
+            <Route path='/add-property' element={<AddProperty />} />
+          </Route>
         </Routes>
       </BrowserRouter>
       <ToastContainer />

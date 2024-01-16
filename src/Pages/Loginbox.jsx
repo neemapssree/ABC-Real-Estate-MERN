@@ -1,10 +1,9 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
-import { BASE_URL } from '../Constants/constants';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setUserRole } from '../Toolkit/userSlice';
+import AxiosInstance from '../Config/AxiosInstance';
 
 
 const Loginbox = ({setBoxName}) => {
@@ -33,7 +32,7 @@ const Loginbox = ({setBoxName}) => {
     e.preventDefault();
     try{      
       if(loginData.email && loginData.password) {
-        axios.post(`${BASE_URL}/auth/login`,loginData).then((res)=>{
+        AxiosInstance.post('/auth/login',loginData).then((res)=>{
           if(res.data.message==="User not found"){
             toast.warning('User not found');            
           }

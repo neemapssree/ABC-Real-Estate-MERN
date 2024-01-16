@@ -1,7 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { BASE_URL } from '../Constants/constants';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import AxiosInstance from '../Config/AxiosInstance';
 
 
 const SignupBox = ({setBoxName}) => {
@@ -64,7 +63,7 @@ const SignupBox = ({setBoxName}) => {
 
     if(Object.keys(validationErrors).length === 0) {
       try{      
-        axios.post(`${BASE_URL}/auth/sign-up`,signUpData).then((res)=>{
+        AxiosInstance.post('/auth/sign-up',signUpData).then((res)=>{
           console.log(res);
           if(res.data.message==="signup successfull"){
             toast.success('Sign up successfull');

@@ -5,8 +5,12 @@ import { BASE_URL, BOOKING_CHARGE, TIMINGS } from '../Constants/constants';
 import ModalView from './ModalView';
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import e from 'cors';
 
 const PropBooking = () => {
+  const {userDetails} = useSelector(state=>state.user);
+
   const {id}=useParams()
   const[singlePropData, setSinglePropData] = useState({});   //object 
   const[showModal, setShowModal]= useState(false);
@@ -26,6 +30,13 @@ const PropBooking = () => {
   const[selectedSlot, setSelectedSlot]=useState(null);
   const[deleteSlotShowModal,setDeleteSlotShowModal]=useState(false);
   const[displaySlotsToDelete, setDisplaySlotsToDelete]=useState([]);
+  const[editPropModal,setEditPropModal] = useState(false);
+  const[editPropData,setEditPropData] = useState({});
+  // const[editPropImage,setEditPropImage] = useState('');
+  // const [epropImg, setEPropImg] = useState('');
+  // const [imgSrc,setImgSrc] = useState('');
+  const[slotUpcoming,setSlotUpcoming] = useState();
+
   
   // Check if any slot is selected
   const areAnySlotsSelected = displaySlotsToDelete.some((slot) => slot.selected);
@@ -51,7 +62,10 @@ const PropBooking = () => {
   },[]);
 
   const getTimeSlotData = (date=new Date()) => {
-    AxiosInstance.get('/user/dayWiseTimeSlot',{params:{propId:id,date:date}}).then((res)=>{      
+    const oneHourLater = new Date(date);
+    oneHourLater.setHours(oneHourLater.getHours() + 1);
+
+    AxiosInstance.get('/user/dayWiseTimeSlot',{params:{propId:id,date:oneHourLater}}).then((res)=>{      
       setDisplaySlotData(res.data);
       
     }).catch((err)=>{
@@ -157,13 +171,16 @@ const PropBooking = () => {
     }catch(err){
 
     }
-  }
-  
+  }  
 
   const getSinglePropData = () => {
     AxiosInstance.get('/user/single-prop',{params:{propId:id}}).then((res) => {
         // console.log(res);
-        setSinglePropData(res.data);        
+        setSinglePropData(res.data); 
+        setEditPropData(res.data); 
+        //setEditPropImage(res.data.propImg);
+        //setImgSrc(`${BASE_URL}/properties/${res.data.propImg}`);
+        //setEPropImg(res.data.propImg);        
        
     }).catch((error) => {
         console.log(error);
@@ -214,7 +231,80 @@ const PropBooking = () => {
   const slotBookedWarning = () => {
     toast.warning('Slot already Booked');
   }
+
+  const[errors,setErrors] = useState();
+
+  const changePropValue = (e) => {
+    setEditPropData({...editPropData, [e.target.name]:e.target.value});
+  }
+
   
+//   const editFileData = (e) => {    
+//     setEditPropImage(null);
+//     const newImageFile = e.target.files[0];
+//     setEditPropImage(null);
+//     setEPropImg(newImageFile);
+
+//     const newImageSrc = URL?.createObjectURL(newImageFile) ?? null;
+//     setEditPropImage(newImageSrc);
+//     setImgSrc(newImageSrc);
+        
+// }
+
+const updatePropData = async (e) => { 
+  e.preventDefault();
+  const validationErrors = {}
+  if(!editPropData.propname.trim()) {
+      validationErrors.propname = "Property Name is required";            
+    }
+  if(!editPropData.state.trim()) {
+      validationErrors.state = "State is required";            
+    }
+  if(!editPropData.type.trim()) {
+      validationErrors.type = "Unit type is required";            
+    }
+    if (isNaN(editPropData.propcount) || editPropData.propcount === "") {
+      validationErrors.propcount = "Number of units is required and must be a number";
+    }
+  // if(!epropImg) {
+  //     validationErrors.epropImg = "Property image is required";            
+  //   }
+
+  setErrors(validationErrors);        
+  // let editedFileData = new FormData();
+  // editedFileData.append('image', epropImg);
+
+  // console.log('edit PropData:', editPropData);
+  // console.log('edited FileData:', editedFileData);
+  
+  if(Object.keys(validationErrors).length === 0) {
+    try{
+      AxiosInstance.post('/admin/updatePropData',editPropData).then((res)=>{
+        if(res.status === 200){
+          toast.success('Updated successfully');        
+          setEditPropModal(false);
+          // setSinglePropData(editPropData);    //If there is no image files
+          getSinglePropData();    //If there is images
+        }
+      })
+    } catch (err) {
+      console.error(err);
+      toast.error("Property couldn't be Added");
+    }
+  }
+  
+}
+
+// const updatePropData = () => {
+//   AxiosInstance.post('/admin/updatePropData',editPropData).then((res)=>{
+//     if(res.status === 200){
+//       toast.success('Updated successfully');        
+//       setEditPropModal(false);
+//       // setSinglePropData(editPropData);    //If there is no image files
+//       getSinglePropData();    //If there is images
+//     }
+//   })
+// }
 
   return (
     <>    
@@ -223,10 +313,11 @@ const PropBooking = () => {
             <div className='bannerText'>
                 <h1>{singlePropData.propname}</h1>
                 <h3 className='text-capitalize'>{singlePropData.state}</h3>
-                <div className='d-flex justify-content-center' style={{gap:"40px"}}>
-                  <button className='btn primaryBtn mt-5 py-3 px-5 w-25' onClick={()=>setShowModal(true)}>Add Time Slot for Booking Views</button>
-                  <button className='btn primaryBtn mt-5 py-3 px-5 w-25' onClick={()=>setDeleteSlotShowModal(true)}>Delete Time Slots</button>
-                </div>                
+                {userDetails.role===1 && <div className='d-flex justify-content-center' style={{gap:"40px"}}>
+                  <button className='btn primaryBtn mt-5 py-3 px-5 w-20' onClick={()=>setShowModal(true)}>Add Time Slot for Booking Views</button>
+                  <button className='btn primaryBtn mt-5 py-3 px-5 w-20' onClick={()=>setDeleteSlotShowModal(true)}>Delete Time Slots</button>
+                  <button className='btn primaryBtn mt-5 py-3 px-5 w-20' onClick={()=>setEditPropModal(true)}>Edit Property</button>
+                </div> }                
             </div>                               
         </div>
         <div className='row justify-content-center'>
@@ -251,7 +342,11 @@ const PropBooking = () => {
       <div className='w-50 mx-auto my-5 px-5 pt-3 pb-5' style={{border:"2px solid #000",borderRadius:"20px",background:"#04004d"}}>
         <h2 className='mb-5 text-light'>View Available Slots</h2>
         <div className='d-flex mb-4' style={{gap:"30px"}}>
-          <button className='btn nullBtn w-50' onClick={()=>getTimeSlotData(todayDate)}>Get Today's Slots</button>
+          <button className='btn nullBtn w-50' onClick={()=>{
+             const today = new Date(todayDate);
+             today.setHours(today.getHours() + 1);
+             getTimeSlotData(today);
+          }}>Get Today's Slots</button>
           <button className='btn nullBtn w-50' onClick={()=>getTimeSlotData(tomorrowDate)}>Get Tomorrow's Slots</button>
         </div>
         <h5 className='mt-5 mb-4 text-light'>Get Day Wise Time Slots</h5>
@@ -338,6 +433,59 @@ const PropBooking = () => {
       { areAnySlotsSelected && (<button className='btn primaryBtn mt-4' onClick={deleteSelectedSlots}>Delete Selected Slots</button> )}
       
     </ModalView>
+
+    {/* Edit Property */}
+    <ModalView showModal={editPropModal} setShowModal={setEditPropModal} propname={singlePropData.propname} resetmodal={resetModal} title={"Edit "}>
+      <div className="editProp">
+        <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label>Property Name: </label><input type='text' name="propname" id="propname" value={editPropData.propname} onChange={changePropValue}/>
+          {errors && errors.propname && <span className='errors'>{errors.propname}</span>}
+        </div>
+        <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label>State:  </label>
+          <select value={editPropData.state} onChange={changePropValue} className="form-select" id="state" name="state">
+            <option selected value="">Choose the state</option>
+            <option value="dubai">Dubai</option>
+            <option value="abu dhabi">Abu Dhabi</option>
+            <option value="sharjah">Sharjah</option>
+          </select>
+          {errors && errors.state && <span className='errors'>{errors.state}</span>}
+        </div>
+        <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label>Type: </label>
+          <select value={editPropData.type} onChange={changePropValue} className="form-select" id="type" name="type">
+            <option selected value="">Choose the type</option>
+            <option value="apartments">Apartments</option>
+            <option value="villa">Villa</option>
+            <option value="townhouse">Townhouse</option>
+          </select>
+          {errors && errors.type && <span className='errors'>{errors.type}</span>}
+        </div>
+        <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label>Number of units: </label><input type='number' name="propcount" id="propcount" value={editPropData.propcount} onChange={changePropValue}/>
+          {errors && errors.propcount && <span className='errors'>{errors.propcount}</span>}
+        </div>
+        <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label>Address: </label><textarea name="propaddress" id="propaddress" value={editPropData.propaddress} onChange={changePropValue}/>
+          {errors && errors.propaddress && <span className='errors'>{errors.propaddress}</span>}
+        </div>
+
+        {/* <div className='input-group mb-4' style={{gap:"15px"}}>
+          <label htmlFor="propimage" className='my-3'>Property Image</label>
+          <input type="file" onChange={editFileData} className="form-control" id="propimage" name="propimage" placeholder="Upload Property Featured Image" />
+          {errors && errors.epropImg && <span className='errors'>{errors.epropImg}</span>}
+          {editPropImage && (
+            <img src={imgSrc}
+              style={{ height: 'auto', width: '300px', marginTop: '30px' }}
+              alt="Property Image"
+            />
+          )}
+        </div> */}
+
+        <button className='btn primaryBtn' onClick={updatePropData}>Update</button>
+      </div>
+    </ModalView>
+
     {/*End of Admin only */}
     
     </>

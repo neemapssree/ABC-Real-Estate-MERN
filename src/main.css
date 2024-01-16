@@ -64,6 +64,9 @@ form .inputGroup { display: flex; flex-direction: row; gap: 15px;}
     .slotView>span {border: 1px dashed #fe4d00; border-radius: 5px; padding: 10px; background:transparent ; color: #fff;}
     .modalProp { background-size: cover; background-repeat: no-repeat;}
     .slotView .slots.selected { background-color:#fe4c0089 ; color: #fff;}
+    .editProp .input-group label { width: 40%;}
+    .editProp .input-group input, .editProp .input-group textarea { position: relative;  flex: 1 1 auto;   width: 1%;}
+    .editProp select option {  background: #ffffff; }
       
       
       

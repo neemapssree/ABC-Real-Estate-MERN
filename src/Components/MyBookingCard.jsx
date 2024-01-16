@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { BASE_URL } from '../Constants/constants'
 import AxiosInstance from '../Config/AxiosInstance'
 
 const MyBookingCard = ({bookingdata}) => {
