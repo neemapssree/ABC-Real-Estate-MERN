@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setUserRole } from '../Toolkit/userSlice';
 import AxiosInstance from '../Config/AxiosInstance';
-import axios from 'axios';
 
 
 const Loginbox = ({setBoxName}) => {
@@ -29,40 +28,11 @@ const Loginbox = ({setBoxName}) => {
     return JSON.parse(jsonPayload);
   }
 
-  // const handleLogin = (e) =>{
-  //   e.preventDefault();
-  //   try{      
-  //     if(loginData.email && loginData.password) {
-  //       AxiosInstance.post('/auth/login',loginData).then((res)=>{
-  //         if(res.data.message==="User not found"){
-  //           toast.warning('User not found');            
-  //         }
-  //         if(res.data.message==="Logged in successfully" && res.data.token){
-  //           toast.success('Logged in successfully'); 
-  //           localStorage.setItem('token',res.data.token);
-  //           const parsedToken = parseJwt(res.data.token);
-  //           localStorage.setItem('user',JSON.stringify(parsedToken));
-  //           dispatch(setUserDetails(parsedToken));  //passing the user details  from parsed token to dispatch
-  //           console.log('parsed token', parsedToken);
-  //           navigate('/home');           
-  //         }
-  //         if(res.data.message==="Enter the correct password" && !res.data.token){
-  //           toast.error('Password incorrect');           
-  //         }
-  //       });
-  //     }else{
-  //       toast.error('Credentials not filled');
-  //     }
-  //   } catch(err){
-  //     console.log(err);
-  //   }    
-  // };  
-
   const handleLogin = (e) =>{
     e.preventDefault();
     try{      
       if(loginData.email && loginData.password) {
-        axios.post('https://realestate-app-api.onrender.com/auth/login',loginData).then((res)=>{
+        AxiosInstance.post('/auth/login',loginData).then((res)=>{
           if(res.data.message==="User not found"){
             toast.warning('User not found');            
           }
