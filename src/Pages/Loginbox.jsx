@@ -31,9 +31,15 @@ const Loginbox = ({setBoxName}) => {
   const handleLogin = (e) =>{
     e.preventDefault();
     try{      
-      if(loginData.email && loginData.password) {
+      if(loginData.email && loginData.password) {        
         console.log(loginData,"login data");
-        AxiosInstance.post('/auth/login',loginData).then((res)=>{
+        AxiosInstance.post('/auth/login',JSON.stringify(loginData),
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+        ).then((res)=>{
           if(res.data.message==="User not found"){
             toast.warning('User not found');            
           }
@@ -54,7 +60,7 @@ const Loginbox = ({setBoxName}) => {
         toast.error('Credentials not filled');
       }
     } catch(err){
-      console.log(err);
+      console.log(err.response.data);
     }    
   };  
 
