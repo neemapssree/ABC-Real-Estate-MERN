@@ -6,7 +6,7 @@ import ModalView from './ModalView';
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import e from 'cors';
+
 
 const PropBooking = () => {
   const {userDetails} = useSelector(state=>state.user);
@@ -237,7 +237,6 @@ const PropBooking = () => {
   const changePropValue = (e) => {
     setEditPropData({...editPropData, [e.target.name]:e.target.value});
   }
-
   
 //   const editFileData = (e) => {    
 //     setEditPropImage(null);
@@ -247,8 +246,7 @@ const PropBooking = () => {
 
 //     const newImageSrc = URL?.createObjectURL(newImageFile) ?? null;
 //     setEditPropImage(newImageSrc);
-//     setImgSrc(newImageSrc);
-        
+//     setImgSrc(newImageSrc);        
 // }
 
 const updatePropData = async (e) => { 
