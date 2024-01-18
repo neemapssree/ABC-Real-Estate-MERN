@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route element={<LoginAuth />}>
             <Route path='/' element={<Login />} />
-          </Route>          
+          </Route>      
 
           {/* user routes */}
           <Route element={<UserAuth />}>
