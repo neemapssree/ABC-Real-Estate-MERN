@@ -206,7 +206,6 @@ const PropBooking = () => {
   }
 
 
-  //Payment Function not completed
   const startBooking = async (selectedSlot,bookingCharge) => {
     try {      
       await AxiosInstance.post('/payment/orders', {        

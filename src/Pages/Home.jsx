@@ -18,9 +18,9 @@ const getAllProperties =()=> {
     AxiosInstance.get('/user/getAllProperties').then((response) => {
         setPropData(response.data);
     }).catch((err) => {      
-        if(err.response && err.response.data.message === "unauthorized user"){          
+        if(err.response && err.response.data.message === "unauthorized user"){         
           localStorage.clear();
-          navigate('/');
+          navigate('/login');
         }
     })
 }

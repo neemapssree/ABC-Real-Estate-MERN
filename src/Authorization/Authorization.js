@@ -23,6 +23,6 @@ export function LoginAuth(){
     const token = localStorage.getItem('token');    
 
     return(
-        token ? <Navigate to='/home' /> : <Outlet />
+        token ? <Navigate to='/' /> : <Outlet/>
     )
 }

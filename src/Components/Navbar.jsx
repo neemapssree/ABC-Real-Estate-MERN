@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 
-
 const MainNavbar = () => {
 
   const {userDetails} = useSelector(state=>state.user);
