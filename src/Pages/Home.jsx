@@ -5,8 +5,7 @@ import AxiosInstance from '../Config/AxiosInstance';
 import PropsCard from '../Components/PropsCard';
 import { useNavigate } from 'react-router-dom';
 
-const Home = () => {
-  
+const Home = () => {  
   const [propData,setPropData] = useState([]);
   const navigate = useNavigate();
 
@@ -24,8 +23,7 @@ const getAllProperties =()=> {
         }
     })
 }
-
-  return (
+  return ( 
     <>
     <HomeBanner />
     <div className='container my-5'>
